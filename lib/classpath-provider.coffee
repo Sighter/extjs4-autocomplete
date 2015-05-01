@@ -10,7 +10,7 @@ class ClasspathProvider
 
   constructor: (mapping) ->
     @mapping = mapping
-    @mapping.push({name: 'Ext', folder: null})
+    @mapping.push({name: 'Ext', folder: 'ext/src'})
 
   getSuggestions: ({prefix, editor, bufferPosition, basePath}) ->
 
