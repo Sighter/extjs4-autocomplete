@@ -3,6 +3,7 @@ module.exports =
 
   activate: ->
     console.log "activating extjs4-autocomplete"
+    console.log 'got path', atom.project.getDirectories()
 
   deactivate: ->
     @provider = null
@@ -10,7 +11,16 @@ module.exports =
   provide: ->
     unless @provider?
       console.log "providing extjs4-autocomplete"
-      Extjs4Provider = require('./extjs4-provider.coffee')
-      @provider = new Extjs4Provider()
+      Extjs4Provider = require('./classpath-provider')
+
+      mapping = [
+        name: 'Utils'
+        folder: 'utils'
+      ,
+        name: 'Lier'
+        folder: 'app'
+      ]
+
+      @provider = new Extjs4Provider(mapping)
 
     return @provider
