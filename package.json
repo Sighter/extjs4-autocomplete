@@ -9,6 +9,7 @@
     "atom": ">0.50.0"
   },
   "dependencies": {
+    "fuzzaldrin": "~1.0.0"
   },
   "providedServices": {
      "autocomplete.provider": {
