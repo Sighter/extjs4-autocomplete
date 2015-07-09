@@ -4,7 +4,7 @@ process = require 'process'
 
 module.exports =
 class ClasspathProvider
-  selector: '.source.js'
+  selector: '.source.js, .source.gfm'
   mapping: []
   candidates: []
 
