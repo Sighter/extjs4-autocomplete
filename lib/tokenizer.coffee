@@ -54,6 +54,7 @@ class mod.StringToken extends mod.BaseToken
 class mod.GuardToken extends mod.BaseToken
   @openregex: null
   @closeregex: null
+  @kind: 'guard'
 
   constructor: (value, @opening) ->
     super value
@@ -84,6 +85,24 @@ class mod.ParenthesesToken extends mod.GuardToken
   @openregex: /^\(/
   @closeregex: /^\)/
 
+class mod.BlockCommentToken extends mod.BaseToken
+  @kind: 'blockcomment'
+
+  @matchCreate: (string) ->
+    openmatch = string.match /^\/\*/
+
+    if openmatch
+      idx = 0
+      while idx <= (string.length - 2)
+        if string[idx] == '*' and string[idx + 1] == '/'
+          slicel = idx + 2
+          tok = new @(string.slice(0, slicel))
+          return [slicel, tok]
+        else
+          idx += 1
+          continue
+
+    return null
 
 class mod.Tokenizer
 
@@ -113,10 +132,12 @@ class mod.Tokenizer
       ret = tok
 
     console.log tokens
+    return tokens
 
 
 mod.tokenclasses = [
   mod.StringToken
+  mod.BlockCommentToken
   mod.FunctionToken
   mod.DefineToken
   mod.LiteralBracketToken

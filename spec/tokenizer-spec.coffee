@@ -39,3 +39,5 @@ describe "Tokenizer", ->
 
     #inString = 'Ext.define("some.class.name", {'
     tokens = tok.tokenize(inString)
+
+    expect(tokens[0].name).toBe('blockcomment')
