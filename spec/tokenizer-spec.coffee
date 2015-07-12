@@ -1,4 +1,10 @@
 tokenizer = require('../lib/tokenizer')
+fs = require('fs')
+
+if jasmine.version
+  console.log jasmine.version
+else
+  console.log 'jasmine-version:' + jasmine.getEnv().versionString()
 
 describe "Some Tokens", ->
 
@@ -24,7 +30,12 @@ describe "Tokenizer", ->
     expect(t.name).toBe('define')
     expect(t.value).toBe('Ext.define')
 
-  it "should return the right tokens", ->
+  it "should return the right tokens", (done) ->
 
-    inString = 'Ext.define("some.class.name", {'
+    console.log arguments
+
+    fname = 'spec/testapp/app/view/Panel.js'
+    inString = fs.readFileSync fname, 'utf8'
+
+    #inString = 'Ext.define("some.class.name", {'
     tokens = tok.tokenize(inString)

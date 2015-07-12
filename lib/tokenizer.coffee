@@ -15,10 +15,29 @@ class mod.BaseToken
     m = string.match @regex
     ret = if m == null then '' else m[0]
 
+  # this calls match and creates a token if match was successful
+  # returns a tuple of match length and token
+  @matchCreate: (string) ->
+    match = @match(string)
+    if match.length > 0
+      matchedToken = new @(match)
+      matchLength = match.length
+      return [matchLength, matchedToken]
+    else
+      return null
+
 
 class mod.DefineToken extends mod.BaseToken
   @regex: /^Ext\.define/
   @kind: 'define'
+
+class mod.FunctionToken extends mod.BaseToken
+  @regex: /^function/
+  @kind: 'function'
+
+class mod.WordToken extends mod.BaseToken
+  @regex: /^\w*/
+  @kind: 'word'
 
 class mod.StringToken extends mod.BaseToken
   @regexes: [/^'[^']*'/,/^"[^"]*"/]
@@ -32,6 +51,40 @@ class mod.StringToken extends mod.BaseToken
 
     return ''
 
+class mod.GuardToken extends mod.BaseToken
+  @openregex: null
+  @closeregex: null
+
+  constructor: (value, @opening) ->
+    super value
+
+  @match: (string) ->
+    return ''
+
+  @matchCreate: (string) ->
+    openmatch = string.match @openregex
+    closematch = string.match @closeregex
+
+    if openmatch
+      matchedToken = new @(openmatch[0], true)
+      matchLength = openmatch.length
+      return [matchLength, matchedToken]
+    else if closematch
+      matchedToken = new @(closematch[0], false)
+      matchLength = closematch.length
+      return [matchLength, matchedToken]
+    else
+      return null
+
+class mod.LiteralBracketToken extends mod.GuardToken
+  @openregex: /^{/
+  @closeregex: /^}/
+
+class mod.ParenthesesToken extends mod.GuardToken
+  @openregex: /^\(/
+  @closeregex: /^\)/
+
+
 class mod.Tokenizer
 
   constructor: (@tokenclasses) ->
@@ -39,36 +92,36 @@ class mod.Tokenizer
   # returns the token which is part of @tokenclasses, which
   # matches first on the string and the length of the match
   matchToken: (string) ->
-    matchedToken = null
-    matchLength = 1
-
     for tc in @tokenclasses
-      match = tc.match(string)
-      if match.length > 0
-        matchedToken = new tc(match)
-        matchLength = match.length
-        break
+      result = tc.matchCreate(string)
+      if result
+        return result
 
-    return [matchLength, matchedToken]
-
-  tokenize: (inString, tokens) ->
+  tokenize: (inString) ->
     me = this
+    tokens = []
+    workstring = inString
 
-    splitThrough = (string, fn) ->
-      if string.length == 0
-        return []
-      [length, result] = fn string
-      console.log 'got string: ', length, string, result
-      return [result].concat(splitThrough string.slice(length) , fn)
+    tokens = while workstring.length > 0
+      # skip whitespace
+      if workstring[0] == ' ' or workstring[0] == '\n'
+        workstring = workstring.slice(1)
+        continue
 
-    tokens = splitThrough inString, (s) ->
-      return me.matchToken(s)
+      [l, tok] = me.matchToken(workstring)
+      workstring = workstring.slice(l)
+      ret = tok
 
-    console.log 'tokens: ', tokens
+    console.log tokens
+
 
 mod.tokenclasses = [
   mod.StringToken
+  mod.FunctionToken
   mod.DefineToken
+  mod.LiteralBracketToken
+  mod.ParenthesesToken
+  mod.WordToken
   mod.BaseToken
 ]
 
