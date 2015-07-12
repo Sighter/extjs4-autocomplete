@@ -2,25 +2,54 @@ _ = require('lodash')
 
 mod = {}
 
-class mod.Matcher
-  constructor: (@name, @regex) ->
-
 class mod.BaseToken
-  constructor: (@name, @value) ->
+  @regex: /^./
+  @kind: 'symbol'
+
+  constructor: (@value) ->
+    @name = @constructor.kind
+
+  # match string against the tokens regex and returns
+  # the match
+  @match: (string) ->
+    m = string.match @regex
+    ret = if m == null then '' else m[0]
+
+
+class mod.DefineToken extends mod.BaseToken
+  @regex: /^Ext\.define/
+  @kind: 'define'
+
+class mod.StringToken extends mod.BaseToken
+  @regexes: [/^'[^']*'/,/^"[^"]*"/]
+  @kind: 'string'
+
+  @match: (string) ->
+    for reg in @regexes
+      m = string.match reg
+      if m != null
+        return m[0]
+
+    return ''
 
 class mod.Tokenizer
 
-  match: (matchers, instring) ->
-    matchedToken = null
-    matcher = _.find matchers, (m) ->
-      match = instring.match m.regex
-      if match == null
-        return false
-      else
-        matchedToken = new mod.BaseToken(m.name, match[0])
-        return true
+  constructor: (@tokenclasses) ->
 
-    return matchedToken
+  # returns the token which is part of @tokenclasses, which
+  # matches first on the string and the length of the match
+  matchToken: (string) ->
+    matchedToken = null
+    matchLength = 1
+
+    for tc in @tokenclasses
+      match = tc.match(string)
+      if match.length > 0
+        matchedToken = new tc(match)
+        matchLength = match.length
+        break
+
+    return [matchLength, matchedToken]
 
   tokenize: (inString, tokens) ->
     me = this
@@ -32,20 +61,15 @@ class mod.Tokenizer
       console.log 'got string: ', length, string, result
       return [result].concat(splitThrough string.slice(length) , fn)
 
-    tokens = splitThrough 'Ext.define("lier.something", {', (s) ->
-      token = me.match(mod.matchers, s)
-      return [token.value.length, token]
+    tokens = splitThrough inString, (s) ->
+      return me.matchToken(s)
 
     console.log 'tokens: ', tokens
 
-mod.matchers = [
-   new mod.Matcher 'define', /^Ext\.define/
-   new mod.Matcher 'string', /^'[^']*'/
-   new mod.Matcher 'string', /^"[^"]*"/
-   new mod.Matcher 'objectbracket', /^[{}]/
-   new mod.Matcher 'bracket', /^[()]/
-   new mod.Matcher 'comma', /^,/
-   new mod.Matcher 'any', /^./
+mod.tokenclasses = [
+  mod.StringToken
+  mod.DefineToken
+  mod.BaseToken
 ]
 
 module.exports = mod

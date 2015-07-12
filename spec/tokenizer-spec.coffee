@@ -5,22 +5,26 @@ describe "Some Tokens", ->
   tok = new tokenizer.Tokenizer()
 
   it "should match", ->
-
     inString = 'Ext.define("some.class.name", {'
-    m = new tokenizer.Matcher 'define', /^Ext\.define/
 
-    token = tok.match(tokenizer.matchers, inString)
+    m = tokenizer.BaseToken.match(inString)
+    expect(m).toEqual('E')
 
-    expect(token.name).toEqual('define')
-    expect(token.value).toEqual('Ext.define')
-
+    m = tokenizer.DefineToken.match(inString)
+    expect(m).toEqual('Ext.define')
 
 describe "Tokenizer", ->
 
-  tok = new tokenizer.Tokenizer()
+  tok = new tokenizer.Tokenizer(tokenizer.tokenclasses)
 
-  it "should tokenize properly", ->
+  it "should match properly", ->
 
     inString = 'Ext.define("some.class.name", {'
+    [l, t] = tok.matchToken(inString)
+    expect(t.name).toBe('define')
+    expect(t.value).toBe('Ext.define')
 
-    tok.tokenize(inString, tokenizer.tokens)
+  it "should return the right tokens", ->
+
+    inString = 'Ext.define("some.class.name", {'
+    tokens = tok.tokenize(inString)
