@@ -85,6 +85,9 @@ class mod.ParenthesesToken extends mod.GuardToken
   @openregex: /^\(/
   @closeregex: /^\)/
 
+class mod.ColonToken extends mod.BaseToken
+  @regex: /^:/
+
 class mod.BlockCommentToken extends mod.BaseToken
   @kind: 'blockcomment'
 
@@ -142,6 +145,7 @@ mod.tokenclasses = [
   mod.DefineToken
   mod.LiteralBracketToken
   mod.ParenthesesToken
+  mod.ColonToken
   mod.WordToken
   mod.BaseToken
 ]

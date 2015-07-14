@@ -13,7 +13,13 @@ Ext.define('Myapp.view.Panel', {
         this.callParent(arguments);
     },
 
-    // some normal comments
+    /**
+     * this is the doc of myMethod
+     *
+     * @param  {String} arg1 some description
+     * @param  {Object} arg2 hello
+     * @return {String}      this is the return value
+     */
     myMethod: function (arg1, arg2) {
 
     }
