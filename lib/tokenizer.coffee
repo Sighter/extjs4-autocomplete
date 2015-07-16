@@ -1,4 +1,5 @@
 _ = require('lodash')
+db = require('../lib/docblock-parser')
 
 mod = {}
 
@@ -99,7 +100,9 @@ class mod.BlockCommentToken extends mod.BaseToken
       while idx <= (string.length - 2)
         if string[idx] == '*' and string[idx + 1] == '/'
           slicel = idx + 2
-          tok = new @(string.slice(0, slicel))
+          s = string.slice(0, slicel)
+          docbloc = db.DocBlocParser.parse(s)
+          tok = new @(docbloc)
           return [slicel, tok]
         else
           idx += 1
