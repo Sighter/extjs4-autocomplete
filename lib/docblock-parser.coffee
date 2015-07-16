@@ -19,7 +19,9 @@ class mod.DocBlocParser
       if description
         firstTag = l.match @tag
         if firstTag == null
-          desc = l.replace(/^[^\w]*/, '')
+          desc = l.replace(/^[^\w]*/, '').replace(/[^\w]*$/, '')
+          if desc == ''
+            continue
           if docbloc.description == ''
             docbloc.description += desc
           else
@@ -41,6 +43,7 @@ class mod.DocBlocParser
         docbloc.return.description = m[2]
         continue
 
+    console.log docbloc
     return docbloc
 
 module.exports = mod
