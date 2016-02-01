@@ -1,4 +1,5 @@
-{parse, constructList} = require('../lib/parser')
+parser = require('../lib/parser')
+tokenizer = require('../lib/tokenizer')
 fs = require('fs')
 
 if jasmine.version
@@ -6,12 +7,15 @@ if jasmine.version
 else
   console.log 'jasmine-version:' + jasmine.getEnv().versionString()
 
-describe "testing", ->
+describe "parser", ->
 
-  it "should match", ->
+  tok = new tokenizer.Tokenizer(tokenizer.tokenclasses)
+
+  it "should be able to parse classes", (done) ->
+
     fname = 'spec/testapp/app/view/Panel.js'
     inString = fs.readFileSync fname, 'utf8'
+    tokens = tok.tokenize(inString)
 
-    console.log constructList
-
-    parse inString, constructList
+    l = parser.constructList[0].match(tokens)
+    expect(l).toEqual(4)

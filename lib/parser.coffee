@@ -3,63 +3,46 @@ _ = require('lodash')
 mod = {}
 
 class mod.BaseConstruct
-  @regex: /^./
-  @kind: 'symbol'
+  @kind: 'baseconstruct'
 
   constructor: (@value) ->
     @name = @constructor.kind
 
+  # matches a construct against a token list
+  #
+  # [BaseToken] -> Int
+  @match: (tokenList) ->
+    return 0
+
+  # build a construct from a definitive match
+  #
+  # [BaseToken] -> BaseConstruct
+  @build: (tokenList) ->
+    return new BaseConstruct(null)
+
+
 class mod.ClassConstruct extends mod.BaseConstruct
-  @regex: /^Ext\.define/
-  @closeregex: null
   @kind: 'class'
 
-  constructor: (value, @opening) ->
+  constructor: (value) ->
     super value
+    @leaf = false
 
-  @match: (string) ->
-    m = string.match @regex
+  @match: (tokenList) ->
+    debugger;
+    docbloc = _.first(tokenList) and _.first(tokenList).kind == 'blockcomment'
+    offset = if docbloc then 1 else 0
+    longEnough = tokenList.length >= 3
 
-    if m == null
-      return m
+    def = if tokenList[offset + 0].kind == 'define' then tokenList[offset + 0] else null
+    gua = if tokenList[offset + 1].kind == 'guard' then tokenList[offset + 1] else null
+    name = if tokenList[offset + 2].kind == 'string' then tokenList[offset + 2] else null
 
-    first = (string.indexOf '{') + 1
+    if not (def and gua and name)
+      return 0
+    else
+      return offset + 3
 
-    findMatchingBracket = (str, startIdx, bracket, closingBracket, stack) ->
-      if startIdx >= str.length
-        return false
-      if stack.length == 0
-        return startIdx
-
-      if str[startIdx] == closingBracket
-        stack.pop()
-        return findMatchingBracket str, startIdx + 1, bracket, closingBracket, stack
-
-      if str[startIdx] == bracket
-        stack.push(str[startIdx])
-        return findMatchingBracket str, startIdx + 1, bracket, closingBracket, stack
-
-      return findMatchingBracket str, startIdx + 1, bracket, closingBracket, stack
-
-    return findMatchingBracket(string, first, '{', '}', ['{'])
-
-
-mod.parse = (string, constructList) ->
-
-  consume = (str) ->
-    if str.length == 0
-      return []
-
-    if str[0] == ' ' or str[0] == '\n'
-      return consume(str.slice(1))
-
-    match = mod.ClassConstruct.match(str)
-    if match
-      console.log str.slice match
-
-    return consume(str.slice(1))
-
-  consume(string)
 
 mod.constructList = [
   mod.ClassConstruct
