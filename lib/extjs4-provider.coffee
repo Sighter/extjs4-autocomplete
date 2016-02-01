@@ -3,7 +3,7 @@ fs = require 'fs'
 
 module.exports =
 class Extjs4Provider
-  selector: '.source.js'
+  selector: '.source.js, .source.gfm'
 
   getSuggestions: ({prefix, editor, bufferPosition, basePath}) ->
     # console.log "got prefix: ", prefix
@@ -17,15 +17,8 @@ class Extjs4Provider
     if editor && bufferPosition
       prefix = @getPrefix editor, bufferPosition
 
-    console.log 'got prefix', prefix
-
     context = new Context(nsMap, prefix)
-
-    console.log 'got context', context
-
     suggestions = completions(context)
-    console.log 'got suggestions', suggestions
-
     return suggestions
 
   getPrefix: (editor, bufferPosition) ->
