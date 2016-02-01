@@ -1,5 +1,6 @@
 fs = require 'fs'
 
+{filter} = require 'fuzzaldrin'
 _ = require('lodash')
 {Either, IO} = require('monet')
 
@@ -10,12 +11,24 @@ class mod.Context
     @query = string.split('.').slice(-1)[0]
     @path = string.split('.').slice(0, -1).join('.')
 
+
+
 # Context -> [Suggestion]
-mod.completions = (context) ->
+mod.candidates = (context) ->
   ns = context.nameSpaces
   matchingNs = _.find(context.nameSpaces, (m) ->
     return context.path.startsWith(m.name)
   )
+
+  # handle rootnamespaces
+  if context.path == ''
+    return _.map(context.nameSpaces, (ns) ->
+      return {
+        text: ns.name,
+        type: 'namespace',
+        rightLabel: 'Root Namespace'
+      }
+    )
 
   if not matchingNs
     return []
@@ -29,6 +42,9 @@ mod.completions = (context) ->
   catch error
     ret = []
   return ret
+
+mod.completions = (context) ->
+  return filter(mod.candidates(context), context.query, key: 'text')
 
 # string -> IO
 mod.parseNameSpace = (path) ->

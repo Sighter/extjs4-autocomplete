@@ -1,9 +1,18 @@
+fs = require 'fs'
+
 module.exports =
   provider: null
 
   activate: ->
-    # console.log "activating extjs4-autocomplete"
-    # console.log 'got path', atom.project.getDirectories()
+    # check for .namespace-map.json
+    try
+      nsMap = JSON.parse(fs.readFileSync('.namespace-map.json', 'utf8'))
+      atom.notifications.addInfo('.namespace-map.json was found!')
+    catch error
+      atom.notifications.addWarning('.namespace-map.json was not found!', {
+        detail: error,
+        dismissable: true
+      })
 
   deactivate: ->
     @provider = null
@@ -11,16 +20,8 @@ module.exports =
   provide: ->
     unless @provider?
       # console.log "providing extjs4-autocomplete"
-      Extjs4Provider = require('./classpath-provider')
+      Extjs4Provider = require('./extjs4-provider')
 
-      mapping = [
-        name: 'Utils'
-        folder: 'utils'
-      ,
-        name: 'Lier'
-        folder: 'app'
-      ]
-
-      @provider = new Extjs4Provider(mapping)
+      @provider = new Extjs4Provider()
 
     return @provider
