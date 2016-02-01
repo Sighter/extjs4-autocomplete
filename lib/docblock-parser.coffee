@@ -43,7 +43,7 @@ class mod.DocBlocParser
         docbloc.return.description = m[2]
         continue
 
-    console.log docbloc
+    # console.log docbloc
     return docbloc
 
 module.exports = mod

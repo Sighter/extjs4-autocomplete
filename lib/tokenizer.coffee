@@ -137,7 +137,7 @@ class mod.Tokenizer
       workstring = workstring.slice(l)
       ret = tok
 
-    console.log tokens
+    ## console.log tokens
     return tokens
 
 

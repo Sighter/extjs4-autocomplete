@@ -3,9 +3,9 @@ tokenizer = require('../lib/tokenizer')
 fs = require('fs')
 
 if jasmine.version
-  console.log jasmine.version
+  # console.log jasmine.version
 else
-  console.log 'jasmine-version:' + jasmine.getEnv().versionString()
+  # console.log 'jasmine-version:' + jasmine.getEnv().versionString()
 
 describe "parser", ->
 

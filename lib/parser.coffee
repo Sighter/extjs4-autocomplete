@@ -29,7 +29,7 @@ class mod.ClassConstruct extends mod.BaseConstruct
     @leaf = false
 
   @match: (tokenList) ->
-    debugger;
+    #debugger;
     docbloc = _.first(tokenList) and _.first(tokenList).kind == 'blockcomment'
     offset = if docbloc then 1 else 0
     longEnough = tokenList.length >= 3

@@ -18,16 +18,16 @@ class ClasspathProvider
       prefix = @getPrefix editor, bufferPosition
 
     basePath = atom.project.getDirectories()[0].getPath() unless basePath
-    console.log 'rootPath', rootPath
+    # console.log 'rootPath', rootPath
 
     classRegex = /\.js$/
 
-    console.log 'prefix', prefix
-    console.log 'cwd is: ', process.cwd()
+    # console.log 'prefix', prefix
+    # console.log 'cwd is: ', process.cwd()
 
     # convert prefix to path
     pathList = prefix.split "."
-    console.log 'pathList', pathList
+    # console.log 'pathList', pathList
     realPrefix = pathList.pop()
 
     # swap root with real path
@@ -39,7 +39,7 @@ class ClasspathProvider
     pathList[0] = rootPath
     path = pathList.join('/')
     path = basePath + '/' + path
-    console.log 'build path', path
+    # console.log 'build path', path
 
     # check for files
     try

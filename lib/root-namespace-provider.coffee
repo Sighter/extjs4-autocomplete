@@ -13,6 +13,6 @@ class RootNamespaceProvider
 
   getSuggestions: (prefix) ->
 
-    console.log "Filtering: ", @candidates
+    ## console.log "Filtering: ", @candidates
 
     res = filter(@candidates, prefix, key: 'text')
