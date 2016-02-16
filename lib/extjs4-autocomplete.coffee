@@ -21,7 +21,8 @@ module.exports =
     unless @provider?
       # console.log "providing extjs4-autocomplete"
       Extjs4Provider = require('./extjs4-provider')
+      {DynamicSnippetsProvider} = require('./dynsnippets')
 
-      @provider = new Extjs4Provider()
+      @provider = [new Extjs4Provider(), new DynamicSnippetsProvider()]
 
     return @provider
