@@ -4,6 +4,19 @@ fs = require 'fs'
 plib = require 'path'
 _ = require 'lodash'
 
+# get the prefix of the cursor in atom editor
+#
+# editor -> position -> String
+mod.getPrefix = (editor, bufferPosition) ->
+  # Whatever your prefix regex might be
+  regex = /[\w0-9_.-]+$/
+
+  # Get the text for the line up to the triggered buffer position
+  line = editor.getTextInRange([[bufferPosition.row, 0], bufferPosition])
+
+  # Match the regex to the line, and return the match
+  line.match(regex)?[0] or ''
+
 # find a matching bracket using stack
 #
 # String -> Int -> Char -> Char -> Array -> Int

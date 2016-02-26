@@ -1,5 +1,6 @@
-{readdir, readFile, nameSpacePath, nameSpaces} = require './helpers'
+{readdir, readFile, nameSpacePath, nameSpaces, getPrefix} = require './helpers'
 _ = require 'lodash'
+{filter} = require 'fuzzaldrin'
 
 mod = {}
 
@@ -24,6 +25,7 @@ mod.dynamicSnippets = (snippedDir, className) ->
             snippet: obj.snippet.replace(/%%classname%%/g, className)
             displayText: obj.displayText
             type: 'snippet'
+            rightLabel: 'Dynamic Snippet'
           }
         )
         console.log 'Got strings: ', sugs
@@ -36,7 +38,7 @@ class mod.DynamicSnippetsProvider
   selector: '.source.js, .source.gfm'
 
   getSuggestions: ({prefix, editor, bufferPosition, basePath}) ->
-    # console.log "got prefix: ", prefix
+    prefix = getPrefix(editor, bufferPosition)
     editor = atom.workspace.getActivePaneItem()
     file = editor?.buffer.file
     filePath = file?.path
@@ -44,7 +46,10 @@ class mod.DynamicSnippetsProvider
     nsp = nameSpaces(atom.project.getPaths()[0])
     p = nsp.then((ns) ->
       console.log 'retreiving snippets for:', snippetDir, ns, filePath
-      return mod.dynamicSnippets(snippetDir, nameSpacePath(filePath, ns))
+      prom = mod.dynamicSnippets(snippetDir, nameSpacePath(filePath, ns))
+      prom.then((suggestions) ->
+        filter(suggestions, prefix, key: 'displayText')
+      )
     )
 
 module.exports = mod
